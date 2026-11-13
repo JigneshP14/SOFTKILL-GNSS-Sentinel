@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DATAV // GNSS SENTINEL - Satellite Defense & Telemetry Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Left Navigation Micro-Ribbon -->
+    <aside class="nav-sidebar">
+      <div class="brand-icon" title="GNSS Sentinel">
+        <span>🛰️</span>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-target="view-operations" data-tooltip="Operations Center">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </button>
+        <button class="nav-item" data-target="view-constellation" data-tooltip="Constellation Map">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        </button>
+        <button class="nav-item" data-target="view-ml-classifier" data-tooltip="ML Signal Classifier">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </button>
+        <button class="nav-item" data-target="view-guardian" data-tooltip="Vehicle Guardian">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </button>
+      </nav>
+      <div class="nav-bottom">
+        <button class="nav-item" id="btnOpenConsole" data-tooltip="ESP32 Console">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      
+      <!-- Top Header Navigation Bar -->
+      <header class="top-header">
+        <div class="header-left">
+          <div class="header-logo-text">
+            <span>✈ DATAV</span>
+          </div>
+          <div class="header-logo-sub">
+            GNSS Satellite & Threat Defense Platform
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="time-badge">
+            <span>🕒</span>
+            <span id="currentUtcTime">Nov 03, 2026 01:15 UTC</span>
+          </div>
+          <div class="status-pill online" id="hwBadge">
+            <span class="pulse-dot"></span>
+            <span>SIMULATION READY</span>
+          </div>
+          <div class="status-pill online" id="alertBadge">
+            <span class="pulse-dot"></span>
+            <span>DEFENSE SECURE</span>
+          </div>
+          <button class="header-btn primary" id="btnConnectSerial">
+            <span>🔌 Connect ESP32 (WebSerial)</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Body -->
+      <div class="dashboard-content">
+        
+        <!-- ========================================================= -->
+        <!-- VIEW 1: OPERATIONS CENTER (DEFAULT OVERVIEW)             -->
+        <!-- ========================================================= -->
+        <div class="view-panel active-view" id="view-operations">
+          <!-- Heading & Actions Row -->
+        <div class="dashboard-heading">
+          <div class="title-container">
+            <h1><span class="title-bar"></span> GNSS Satellite Operations</h1>
+            <p>Real-time orbital tracking, random forest signal penetrability classification, and anti-spoofing defense</p>
+          </div>
+          <div class="heading-actions">
+            <button class="header-btn outline" id="btnEarlyWarning">
+              <span>🔔 Early Warning: ACTIVE</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards Row -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-label">Satellites Tracked</span>
+              <span class="metric-value" id="valSats">14</span>
+              <span class="metric-delta positive">▲ 24 In Constellation</span>
+            </div>
+            <div class="metric-icon-box">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-label">Mean Signal (C/N0)</span>
+              <span class="metric-value" id="valMeanSnr">41.2 dB-Hz</span>
+              <span class="metric-delta positive">▲ Strong Line-of-Sight</span>
+            </div>
+            <div class="metric-icon-box" style="background: #E6F9FF; color: #00C2FF;">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-label">Position Dilution (HDOP)</span>
+              <span class="metric-value" id="valHdop">0.85</span>
+              <span class="metric-delta neutral">● Ideal 3D Fix</span>
+            </div>
+            <div class="metric-icon-box" style="background: #ECFDF5; color: #10B981;">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 3"/></svg>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="metric-label">Defense Integrity Level</span>
+              <span class="metric-value" id="valIntegrity">99.8%</span>
+              <span class="metric-delta positive">▲ 0 Threat Anomalies</span>
+            </div>
+            <div class="metric-icon-box" style="background: #F8FAFD; color: #0066FF;">
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operations 3-Column Grid -->
+        <div class="operations-grid">
+          
+          <!-- Left Column: Geodetic, Donut, Waveform, Table -->
+          <div class="col-left">
+            
+            <!-- Receiver Position Card -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">📍 Receiver Geodetic Fix & Location</span>
+                <span class="panel-subtitle">ESP32 / NEO-6M</span>
+              </div>
+              <div class="coord-grid">
+                <div class="coord-item">
+                  <div class="coord-title">Latitude</div>
+                  <div class="coord-val" id="valLat">12.971598° N</div>
+                </div>
+                <div class="coord-item">
+                  <div class="coord-title">Longitude</div>
+                  <div class="coord-val" id="valLon">77.594562° E</div>
+                </div>
+                <div class="coord-item">
+                  <div class="coord-title">Altitude (MSL)</div>
+                  <div class="coord-val" id="valAlt">924.5 m</div>
+                </div>
+                <div class="coord-item">
+                  <div class="coord-title">Ground Speed</div>
+                  <div class="coord-val" id="valSpeed">24.5 km/h</div>
+                </div>
+              </div>
+
+              <!-- Resolved Human-Readable Location Banner -->
+              <div style="margin-top: 12px; padding: 10px 12px; background: var(--bg-surface-soft); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Current Ground Location</div>
+                  <div style="font-size: 13px; font-weight: 700; color: var(--navy-slate);" id="valLocationName">Bangalore, Karnataka, India</div>
+                </div>
+                <a id="btnMapLink" href="https://www.google.com/maps?q=12.971598,77.594562" target="_blank" style="font-size: 11px; font-weight: 600; color: var(--primary); text-decoration: none; padding: 4px 8px; border: 1px solid var(--border-light); border-radius: 4px; background: #fff; transition: all 0.2s;">
+                  🗺️ Open in Maps
+                </a>
+              </div>
+            </div>
+
+            <!-- Signal Penetration Donut (Random Forest Classifier) -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🧠 Signal Penetration ML</span>
+                <span class="panel-subtitle">Random Forest</span>
+              </div>
+              <div class="donut-container">
+                <div class="donut-svg-wrapper">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="#EDF2F7" stroke-width="14"/>
+                    <circle id="donutSvgCircle" cx="60" cy="60" r="45" fill="none" stroke="#0066FF" stroke-width="14"
+                            stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="donut-center-text">
+                    <div class="donut-center-number" id="donutCenterNum">22</div>
+                    <div class="donut-center-label">Signals</div>
+                  </div>
+                </div>
+                <div class="donut-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot-name"><span class="legend-dot" style="background: #0066FF;"></span> Penetrable</span>
+                    <span class="legend-val" id="donutValPen">68%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot-name"><span class="legend-dot" style="background: #94A3B8;"></span> Non-Penetrable</span>
+                    <span class="legend-val" id="donutValNonPen">18%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot-name"><span class="legend-dot" style="background: #EF4444;"></span> Threat / Jam</span>
+                    <span class="legend-val" id="donutValThreat">0%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot-name"><span class="legend-dot" style="background: #F59E0B;"></span> Weak / Fringe</span>
+                    <span class="legend-val" id="donutValWeak">14%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Signal Flow Waveform Trend (Like Reference Image) -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🌊 Signal Flow Trend (C/N0)</span>
+                <span class="panel-subtitle">Dynamic Spline</span>
+              </div>
+              <div class="chart-canvas-box">
+                <canvas id="trendCanvas"></canvas>
+              </div>
+            </div>
+
+            <!-- Constellation Telemetry Table -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">📡 Satellite Constellation</span>
+                <span class="panel-subtitle">Real-time Channels</span>
+              </div>
+              <table class="sat-table">
+                <thead>
+                  <tr>
+                    <th>PRN</th>
+                    <th>System</th>
+                    <th>Elev</th>
+                    <th>Azim</th>
+                    <th>SNR</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="satTableBody">
+                  <!-- Injected via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <!-- Center Column: 3D Dotted Interactive Globe -->
+          <div class="col-center">
+            <div class="globe-card">
+              <div class="globe-header-overlay">
+                <div class="globe-title-group">
+                  <h2>Orbital Constellation & Beams</h2>
+                  <p>Real-time Keplerian orbital tracks, satellite nodes, and vector projections</p>
+                </div>
+                <div class="globe-controls">
+                  <button class="globe-btn constel-btn active" data-constel="ALL">ALL</button>
+                  <button class="globe-btn constel-btn" data-constel="GPS">GPS</button>
+                  <button class="globe-btn constel-btn" data-constel="GALILEO">Galileo</button>
+                  <button class="globe-btn constel-btn" data-constel="GLONASS">GLONASS</button>
+                </div>
+              </div>
+
+              <!-- Canvas 3D Viewport -->
+              <div class="globe-viewport">
+                <canvas id="globeCanvas"></canvas>
+              </div>
+
+              <!-- Floating Bottom HUD -->
+              <div class="globe-hud">
+                <div class="hud-item">
+                  <span>Target:</span>
+                  <strong id="hudTargetText">Autonomous Car (UGV-01)</strong>
+                </div>
+                <div class="hud-item">
+                  <span>Fix Status:</span>
+                  <strong style="color: #10B981;">3D DGPS / RTK</strong>
+                </div>
+                <div class="hud-item">
+                  <span>Geodesic Beam Density:</span>
+                  <strong>24 Beams Active</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Guardian & ML Diagnostic & Virtual Simulation -->
+          <div class="col-right">
+            
+            <!-- Vehicle Guardian Card -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🛡️ Civilian Defense Guardian</span>
+                <span class="panel-subtitle">Autonomous Security</span>
+              </div>
+              
+              <!-- Vehicle Switcher -->
+              <div class="guardian-mode-switch">
+                <button class="guardian-tab active" id="tabVehicleCar">
+                  🚗 Autonomous Car
+                </button>
+                <button class="guardian-tab" id="tabVehicleDrone">
+                  🛸 Surveillance Drone
+                </button>
+              </div>
+
+              <!-- Threat Alert Banner -->
+              <div class="protection-status-card" id="protectionCard">
+                <div class="protection-icon">
+                  <svg width="20" height="20" fill="none" stroke="#10B981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <div class="protection-info">
+                  <h4 id="protectionTitle">SYSTEM SECURE // INTEGRITY LEVEL: SIL-3</h4>
+                  <p id="protectionDesc">Clean line-of-sight locks established across 4 constellations.</p>
+                </div>
+              </div>
+
+              <div style="font-size: 11px; color: var(--text-secondary); background: var(--bg-surface-soft); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+                <strong>Fail-Safe Action:</strong>
+                <div id="failSafeAction" style="margin-top: 3px; font-weight: 600; color: var(--navy-slate);">Nominal RTK/GNSS Guidance: SIL-3 Safety Standards Met</div>
+              </div>
+            </div>
+
+            <!-- Virtual Simulation Lab (Jamming & Spoofing Study) -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🧪 Virtual Simulation Lab</span>
+                <span class="panel-subtitle">EW Study & Testing</span>
+              </div>
+              <div class="sim-controls">
+                
+                <!-- Jamming Simulation -->
+                <div class="sim-group">
+                  <div class="sim-group-header">
+                    <span class="sim-group-title">
+                      <span>📶 RF Broadband Jamming</span>
+                    </span>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleJamming">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="sim-slider-row">
+                    <input type="range" id="sliderJamming" min="10" max="100" value="45">
+                    <span class="sim-val-label" id="valJamming">45%</span>
+                  </div>
+                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Injects RF noise floor, degrades SNR across all PRNs.</div>
+                </div>
+
+                <!-- GPS Spoofing Simulation -->
+                <div class="sim-group">
+                  <div class="sim-group-header">
+                    <span class="sim-group-title">
+                      <span>🎯 GPS Spoofing / Meaconing</span>
+                    </span>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleSpoofing">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="sim-slider-row">
+                    <input type="range" id="sliderSpoofing" min="0.01" max="0.25" step="0.01" value="0.05">
+                    <span class="sim-val-label" id="valSpoofing">+0.05°</span>
+                  </div>
+                  <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Injects false coordinates, Doppler mismatch & clock jump.</div>
+                </div>
+
+                <!-- Urban Canyon Obstruction -->
+                <div class="sim-group">
+                  <div class="sim-group-header">
+                    <span class="sim-group-title">
+                      <span>🏢 Urban Canyon Blockage</span>
+                    </span>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleUrbanCanyon">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Simulates low-elevation multipath & structural non-penetration.</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Random Forest ML Diagnostics -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">⚙️ Random Forest ML Engine</span>
+                <span class="panel-subtitle">35 Trees // 96.8% OOB</span>
+              </div>
+              <div class="ml-feature-list" id="mlFeaturesList">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        </div> <!-- End of view-operations -->
+
+        <!-- ========================================================= -->
+        <!-- VIEW 2: CONSTELLATION MAP & POLAR SKYPLOT                -->
+        <!-- ========================================================= -->
+        <div class="view-panel" id="view-constellation">
+          <div class="dashboard-heading">
+            <div class="title-container">
+              <h1><span class="title-bar"></span> Constellation Polar SkyMap & Fleet Roster</h1>
+              <p>Exact operational satellite spacecraft names, NORAD catalogue IDs, azimuth/elevation polar radar & block generations</p>
+            </div>
+          </div>
+
+          <div class="constellation-grid">
+            <!-- Left: Polar Skyplot Radar -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🧭 Overhead Polar Skyplot (Radar)</span>
+                <span class="panel-subtitle">Zenith 90° | Horizon 0°</span>
+              </div>
+              <div class="skyplot-wrapper">
+                <canvas id="skyplotCanvas" width="340" height="320"></canvas>
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: center;">
+                Center: 90° Zenith (Overhead) | Inner: 60° | Middle: 30° | Outer: 0° Horizon
+              </div>
+            </div>
+
+            <!-- Right: Detailed Satellite Fleet Table with EXACT NAMES -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🛰️ Tracked Satellite Fleet (Real Spacecraft Names)</span>
+                <span class="panel-subtitle" id="fleetCountBadge">14 Tracked Satellites</span>
+              </div>
+              <div style="overflow-x: auto; max-height: 480px; overflow-y: auto;">
+                <table class="sat-table">
+                  <thead>
+                    <tr>
+                      <th>Spacecraft Name</th>
+                      <th>PRN</th>
+                      <th>Block / Generation</th>
+                      <th>NORAD ID</th>
+                      <th>Orbital Plane</th>
+                      <th>Azim / Elev</th>
+                      <th>C/N0 SNR</th>
+                      <th>ML Penetrability</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fleetTableBody">
+                    <!-- Injected dynamically with exact names -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 3: ML SIGNAL CLASSIFIER LAB                         -->
+        <!-- ========================================================= -->
+        <div class="view-panel" id="view-ml-classifier">
+          <div class="dashboard-heading">
+            <div class="title-container">
+              <h1><span class="title-bar"></span> Machine Learning Signal Classifier Suite</h1>
+              <p>Real mathematical Random Forest ensemble (35 Decision Trees) evaluating physical RF signal parameters</p>
+            </div>
+          </div>
+
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Ensemble Architecture</span>
+                <span class="metric-value">35 Trees</span>
+                <span class="metric-delta positive">▲ Max Depth: 7 Layers</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Model Accuracy (OOB)</span>
+                <span class="metric-value">96.8%</span>
+                <span class="metric-delta positive">▲ Gini Impurity Metric</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Signal Classes</span>
+                <span class="metric-value">5 Categories</span>
+                <span class="metric-delta neutral">● Penetrable / Threat / Weak</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-info">
+                <span class="metric-label">Feature Dimension</span>
+                <span class="metric-value">8 Parameters</span>
+                <span class="metric-delta positive">▲ Doppler / SNR / Drift</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ml-lab-grid">
+            <!-- Left: Confusion Matrix -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">📊 ML Classifier Confusion Matrix</span>
+                <span class="panel-subtitle">Validation on 1,200 Signals</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th>True \ Pred</th>
+                    <th>Strong</th>
+                    <th>Penetrable</th>
+                    <th>Weak</th>
+                    <th>Non-Pen</th>
+                    <th>Threat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Strong</strong></td>
+                    <td class="matrix-cell-high">98.2%</td>
+                    <td>1.8%</td>
+                    <td>0.0%</td>
+                    <td>0.0%</td>
+                    <td>0.0%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Penetrable</strong></td>
+                    <td>2.1%</td>
+                    <td class="matrix-cell-high">95.4%</td>
+                    <td>1.9%</td>
+                    <td>0.6%</td>
+                    <td>0.0%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Weak</strong></td>
+                    <td>0.0%</td>
+                    <td>2.4%</td>
+                    <td class="matrix-cell-high">94.1%</td>
+                    <td>3.5%</td>
+                    <td>0.0%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Non-Pen</strong></td>
+                    <td>0.0%</td>
+                    <td>0.5%</td>
+                    <td>3.1%</td>
+                    <td class="matrix-cell-high">96.4%</td>
+                    <td>0.0%</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Threat</strong></td>
+                    <td>0.0%</td>
+                    <td>0.0%</td>
+                    <td>0.0%</td>
+                    <td>0.2%</td>
+                    <td class="matrix-cell-high">99.8%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Right: Interactive Feature Inspector -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🔬 Live Signal Vector Inspector & Tester</span>
+                <span class="panel-subtitle">Simulate & Test Classifier</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+                    <span>SNR (C/N0 Density)</span>
+                    <span id="inspectSnrVal">38 dB-Hz</span>
+                  </div>
+                  <input type="range" id="inspectSnr" min="10" max="55" value="38" style="width: 100%;">
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+                    <span>Multipath Variance Index</span>
+                    <span id="inspectMpVal">1.2</span>
+                  </div>
+                  <input type="range" id="inspectMp" min="0.1" max="12.0" step="0.1" value="1.2" style="width: 100%;">
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+                    <span>Doppler Residual Mismatch</span>
+                    <span id="inspectDopVal">1.5 Hz</span>
+                  </div>
+                  <input type="range" id="inspectDop" min="0" max="100" value="2" style="width: 100%;">
+                </div>
+                <div style="padding: 14px; border-radius: 8px; background: var(--bg-surface-soft); border: 1px solid var(--border-light); margin-top: 8px;">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--navy-slate);">
+                    Real-time RF Ensemble Decision:
+                  </div>
+                  <div id="inspectResultText" style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 6px 0;">
+                    Penetrable (Confidence: 97.2%)
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted);" id="inspectVotesText">
+                    Voting: Penetrable: 34 trees | Strong: 1 tree
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 4: VEHICLE GUARDIAN & CIVILIAN DEFENSE              -->
+        <!-- ========================================================= -->
+        <div class="view-panel" id="view-guardian">
+          <div class="dashboard-heading">
+            <div class="title-container">
+              <h1><span class="title-bar"></span> Civilian Defense & Autonomous Vehicle Protection</h1>
+              <p>Active GNSS cybersecurity guardian protecting Autonomous Cars (UGV) and Drones (UAV) from signal jamming, spoofing, and loss of lock</p>
+            </div>
+          </div>
+
+          <div class="operations-grid" style="grid-template-columns: 1fr 1fr;">
+            <!-- Left: Cockpit Defense Telemetry -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🛡️ Autonomous Vehicle Mission Cockpit</span>
+                <span class="panel-subtitle">SIL-3 Avionics Grade</span>
+              </div>
+              <div class="coord-grid">
+                <div class="coord-item">
+                  <div class="coord-title">Vehicle Platform</div>
+                  <div class="coord-val" id="guardianVehicleName">Autonomous Car (UGV-01)</div>
+                </div>
+                <div class="coord-item">
+                  <div class="coord-title">Security Status</div>
+                  <div class="coord-val" id="guardianSecStatus" style="color: var(--success);">SECURE (SIL-3)</div>
+                </div>
+                <div class="coord-item">
+                  <div class="coord-title">Anti-Spoofing Margin</div>
+                  <div class="coord-val" id="guardianSpoofMargin">+42 dB Protection</div>
+                </div>
+                <div class="coord-item">
+                  <div class="coord-title">Active Fail-Safe Action</div>
+                  <div class="coord-val" id="guardianFailSafeVal" style="font-size: 12px;">Nominal GNSS Guidance</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 18px; padding: 14px; border-radius: 8px; background: var(--bg-surface-soft); border: 1px solid var(--border-light);">
+                <h4 style="font-size: 13px; font-weight: 700; color: var(--navy-slate); margin-bottom: 6px;">Fail-Safe Protection Matrix</h4>
+                <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                  • <strong>Phase 1 (Signal Weakness / Canyon Loss)</strong>: Multi-sensor EKF gain increases on Wheel Odometry and Optical Flow.<br>
+                  • <strong>Phase 2 (RF Broadband Jamming)</strong>: Immediate disengagement of GNSS; autonomous dead-reckoning fallback via onboard 6-DOF IMU.<br>
+                  • <strong>Phase 3 (GPS Spoofing Attack)</strong>: Trajectory vector anomaly detected; Car automatically executes safe roadside pullover; Drone transitions to barometric altitude hold.
+                </p>
+              </div>
+            </div>
+
+            <!-- Right: Electronic Warfare Simulation & Study Deck -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <span class="panel-title">🧪 Jamming & Spoofing Attack Injection Lab</span>
+                <span class="panel-subtitle">For Academic & Study Purposes</span>
+              </div>
+              <div class="sim-controls">
+                <div class="sim-group">
+                  <div class="sim-group-header">
+                    <span class="sim-group-title">📶 RF Broadband Jamming (Chirp Attack)</span>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleJammingGuardian">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <p style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                    Simulates high-power RF noise floor injection, dropping SNR and forcing the autonomous vehicle to switch to IMU Dead-Reckoning.
+                  </p>
+                </div>
+
+                <div class="sim-group">
+                  <div class="sim-group-header">
+                    <span class="sim-group-title">🎯 GPS Spoofing / Coordinate Hijacking</span>
+                    <label class="switch">
+                      <input type="checkbox" id="toggleSpoofingGuardian">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <p style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+                    Simulates a false ground transmitter injecting false coordinates. Tests whether the Random Forest catches the Doppler/clock anomaly.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Platform Info Bar -->
+      <footer class="footer-bar">
+        <div class="footer-left">
+          <span>✈ DATAV</span>
+          <span>|</span>
+          <span>GNSS Satellite Defense & Telemetry Platform</span>
+        </div>
+        <div class="footer-right">
+          <span>● System Status: Fully Operational</span>
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- Hardware / WebSerial Debug Modal -->
+  <div class="modal-overlay" id="serialModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔌 ESP32 Hardware Console (WebSerial)</h3>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+          Direct real-time 115200 baud USB Serial link between ESP32 and dashboard.
+          Status: <strong id="serialStatusText" style="color: var(--primary);">Standby</strong>
+        </p>
+        <div class="serial-log-window" id="serialLogs">
+          <div>[SYSTEM] WebSerial Monitor initialized.</div>
+          <div>[SYSTEM] Waiting for ESP32 COM port connection...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="gnss_random_forest.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
